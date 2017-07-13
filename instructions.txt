@@ -1,0 +1,76 @@
+ec:9b:f3:f4:93:ed
+ec:88:92:8e:5e:52
+
+ping -c 2 129.97.69.104
+
+#ssh login
+ssh pi@129.97.69.104
+sshpass -p 'raspberry' ssh pi@129.97.69.104
+
+ps aux | grep -i python
+sudo kill 4432
+
+grep "ec:9b:f3:f4:93:ed" /home/pi/Documents/macatch/output.txt
+
+sudo iwconfig
+
+#Scan for wifi networks
+sudo iwlist wlan0 scan | grep ESSID
+or 
+sudo iwlist wlan0 scan
+
+#try
+sudo dumpcap -I -i wlan0
+tcpdump -i wlan0 -e -s 256 type mgt subtype probe-resp or subtype probe-req
+
+#scan for wifi signals
+iwlist wlan0 s
+
+rsync -avz -e ssh pi@129.97.69.104:~/Documents/macatch/DB /home/wqkhan/Documents/raspberrypi/macatch/
+
+sudo rm ~/Documents/macatch/DB/*
+
+Copy to the pi
+scp /home/wqkhan/Documents/raspberrypi/macatch/main.py pi@129.97.69.104:~/Documents/macatch
+
+copy from the pi
+scp pi@129.97.69.104:~/Documents/macatch/clean.sh /home/wqkhan/Documents/raspberrypi/macatch/
+
+sudo crontab -e -u root
+@reboot bash /home/pi/Documents/macatch/clean.sh
+@reboot python /home/pi/Documents/macatch/main.py &
+
+/etc/init.d/cron status
+
+#empty the text file
+truncate -s 0 /home/pi/Documents/CellTracker/rawData.txt
+
+
+# capture all to a .pcap file
+tshark -I -i wlan0 -w ~/Documents/scripts/cellTracker/mycap.pcap
+
+	proc = subprocess.Popen("stdbuf -oL tshark -I -i wlan0 -a duration:10 -Y 'wlan.fc.type == 0 && wlan.fc.subtype == 4' \
+	 -T fields -e wlan.ta -e frame.time -e frame.time_relative -e wlan.da_resolved -e wlan.sa_resolved -e wlan.ra_resolved \
+	 -e wlan.ta_resolved -e wlan.bssid_resolved -e wlan.addr_resolved -e wlan.sa -e radiotap.dbm_antsignal \
+	 -e wlan_mgt.ssid -e wlan.mactime > /home/pi/Documents/CellTracker/rawData.txt",
+	shell=True,
+	bufsize=1,
+	stdout=subprocess.PIPE,
+	stderr=subprocess.STDOUT)
+
+wlan.ta
+frame.time
+frame.time_relative
+wlan.sa
+wlan.da_resolved
+wlan.sa_resolved
+wlan.ra_resolved
+wlan.ta_resolved
+wlan.bssid_resolved
+wlan.addr_resolved
+wlan_mgt.ssid
+wlan.mactime
+radiotap.dbm_antsignal
+
+sudo apt-get install python-dev
+sudo apt-get -y install python-rpi.gpio python3-rpi.gpio

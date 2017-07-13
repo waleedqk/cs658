@@ -1,0 +1,43 @@
+https://www.youtube.com/watch?v=IrJmO3nPg4M
+
+
+sudo apt-get update
+
+sudo apt-get install wireshark wireless-tools usbutils firmware-atheros tshark apt-transport-https tcpdump
+sudo dpkg-reconfigure wireshark-common 
+sudo usermod -a -G wireshark $USER
+
+sudo nano /etc/apt/sources.list
+
+deb http://ftp.us.debian.org/debian/ squeeze main non-free
+deb http://security.debian.org/ squeeze/updates main non-free
+deb http://ftp.us.debian.org/debian/ squeeze-updates main non-free
+deb http://backports.debian.org/debian-backposts squeeze-backports main non-free
+
+Update the package cache: 
+sudo apt-get update
+
+Download the wifi utils: 
+sudo apt-get install wireless-tools usbutils
+
+Download the required firmware
+sudo apt-get install firmware-atheros
+sudo wget http://linuxwireless.org/download/htc_fw/1.3/htc_9271.fw
+sudo mv htc_9271.fw /lib/firmware
+
+###Add adapter definition to network config
+
+sudo nano /etc/network/interfaces 
+
+# The wireless interface
+auto wlan0
+iface wlan0 inet dhcp
+wpa-conf /etc/wpa.conf
+
+sudo ifconfig wlan0 down
+sudo iwconfig wlan0 mode monitor
+sudo ifconfig wlan0 promisc
+# sudo iwconfig wlan0 channel 6
+sudo ifconfig wlan0 up
+
+sudo tshark -i wlan0
